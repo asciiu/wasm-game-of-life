@@ -78,7 +78,6 @@ const fps = new class {
   }
 };
 
-
 const ctx = canvas.getContext('2d');
 let animationID = null;
 
