@@ -1,4 +1,7 @@
 import * as PIXI from 'pixi.js'
+import * as Keyboard from 'pixi.js-keyboard'
+import * as Mouse from 'pixi.js-mouse'
+import { Ship } from './ship.js'
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -12,14 +15,70 @@ app.renderer.view.style.position = "absolute";
 app.renderer.view.style.display = "block";
 app.renderer.autoResize = true
 
-const doge = PIXI.Sprite.from('images/doge.png');
+const container = new PIXI.Container();
+container.pivot.x = container.width / 2;
+container.pivot.y = container.height / 2;
+container.x = app.screen.width / 2;
+container.y = app.screen.height / 2;
 
-// set the anchor point so the texture is centerd on the sprite
-doge.anchor.set(0.5);
-doge.x = app.screen.width / 2;
-doge.y = app.screen.height / 6;
-doge.scale.set(0.3);
-app.stage.addChild(doge);
+const player = new Ship({
+  clientID: 1,
+  image: "images/rocket.png", 
+  width: 15,
+  height: 20,
+  x: 0,
+  y: 0,
+})
+setup();
+
+
+function setup() {
+  player.sprite.acceleration = new PIXI.Point(player.x,player.y);
+  player.sprite.mass = 1;
+  container.addChild(player.sprite);
+  app.stage.addChild(container);
+
+  //Start the game loop 
+  app.ticker.add(delta => gameLoop(delta));
+  
+  Mouse.events.on('released', null, (buttonCode, event, mouseX, mouseY, mouseOriginX, mouseOriginY, mouseMoveX, mouseMoveY) => {
+    console.log(buttonCode, mouseOriginX, mouseOriginY, mouseX, mouseY, mouseMoveX, mouseMoveY);
+  });
+}
+
+function gameLoop(delta){
+  //Update the current game state:
+  input(delta);
+  var sprite = player.sprite;
+  player.sprite.acceleration.set(player.sprite.acceleration.x * 0.99, player.sprite.acceleration.y * 0.99);
+  sprite.x += sprite.acceleration.x * delta;
+  sprite.y += sprite.acceleration.y * delta;
+}
+
+function input(delta) {
+  // Keyboard
+  if (Keyboard.isKeyDown('ArrowLeft', 'KeyA')) {
+    //player.sprite.rotation -= 0.05 * delta;
+    container.rotation -= 0.05 * delta;
+  }
+  if (Keyboard.isKeyDown('ArrowRight', 'KeyD')) {
+    //player.sprite.rotation += 0.05 * delta;
+    container.rotation += 0.05 * delta;
+  }
+  if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
+    var sprite = player.sprite;
+    sprite.acceleration.set(0, -1);
+
+    console.log("up");
+    //cat.y -= speed;
+  }
+
+  //if (Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
+  //  console.log("down");
+  //  //cat.y += speed;
+  //}
+  Keyboard.update();
+}
 
 // holder to store the aliens
 //const aliens = [];

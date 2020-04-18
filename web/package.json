@@ -29,6 +29,8 @@
   "dependencies": {
     "kind-of": ">=6.0.3",
     "pixi.js": "^5.2.1",
+    "pixi.js-keyboard": "^1.0.9",
+    "pixi.js-mouse": "^1.0.4",
     "wasm-game-of-life": "file:../rusty/pkg"
   },
   "devDependencies": {
