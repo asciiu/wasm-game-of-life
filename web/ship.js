@@ -9,7 +9,7 @@ export class Ship {
     x: x, 
     y: y, 
     velocityX: vx = 0,
-    velocityY: vy = 0,
+    velocityX: vy = 0,
     radius: rad = 6,
     rotation: radian = 0,
     heading: heading = 0,
@@ -17,29 +17,39 @@ export class Ship {
   }) {
     this.clientID = id;
     this.radius = rad;
-    this.heading = heading;
     this.rotation = radian;
     this.active = active;
     this.isBoosting = false;
     this.isDestroyed = false;
+    this.particles = [];
+    this.heading = new PIXI.Point(0, 0);
+    this.velocity = new PIXI.Point(vx, vy);
 
     const sprite = PIXI.Sprite.from(img);
-
     // set the anchor point so the texture is centerd on the sprite
+    sprite.x = 0;
+    sprite.y = 0;
     sprite.anchor.set(0.5);
-    sprite.x = x;
-    sprite.y = y;
     sprite.scale.set(0.02);
-
     this.sprite = sprite;
 
-    //this.color = {
-    //  red: 0,
-    //  green: 200,
-    //  blue: 0,
-    //  alpha: 200,
-    //}
-    this.particles = [];
+    // the parent container for this asset
+    const container = new PIXI.Container();
+    container.acceleration = new PIXI.Point(0, 0);
+    container.pivot.x = container.width / 2;
+    container.pivot.y = container.height / 2;
+    container.x = x;
+    container.y = y;
+    container.addChild(this.sprite);
+    this.container = container;
+
+    //this.heading.x = Math.cos(this.container.rotation);
+    //this.heading.y = Math.sin(this.container.rotation);
+
+    this.heading.x = Math.cos(this.container.rotation - Math.PI/2);
+    this.heading.y = Math.sin(this.container.rotation - Math.PI/2);
+
+    //this.container.rotation = - Math.PI / 2;
   }
 
   update() {
@@ -70,7 +80,13 @@ export class Ship {
   //     }
   // }
   
-  render() {
+  render(delta) {
+    this.container.x += this.velocity.x * 0.99;
+    this.container.y += this.velocity.y * 0.99;
+    //this.velocity.set(this.velocity.x * 0.99 + this.heading.x, this.velocity.y * 0.99 + this.heading.y);
+    //this.container.x += this.velocity.x * delta;
+    //this.container.y += this.velocity.y * delta
+
       //this.p5.push();
       //this.p5.translate(this.pos.x, this.pos.y);
       //this.p5.rotate(this.heading + this.p5.PI / 2);
@@ -110,12 +126,22 @@ export class Ship {
   //   this.pos.x = x;
   //   this.pos.y = y;
   // }
+  thrust() {
+    this.velocity.x += (this.heading.x) * 0.1;
+    this.velocity.y += (this.heading.y) * 0.1;
+    //this.velocity.x *= 0.1;
+    //this.velocity.y *= 0.1;
 
-  // setRotation = (radian) => {
-  //   this.rotation = radian;
-  // }
-  
-  turn() {
-    this.heading += this.rotation;
+    //this.velocity.set(this.velocity.x + this.heading.x, this.velocity.y + this.heading.y);
   }
+
+  setRotation(radian) {
+    this.container.rotation += radian;
+    this.heading.x = Math.cos(this.container.rotation - Math.PI/2);
+    this.heading.y = Math.sin(this.container.rotation - Math.PI/2);
+  }
+  
+  //turn() {
+  //  this.heading += this.rotation;
+  //}
 }

@@ -7,74 +7,78 @@ import { Ship } from './ship.js'
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container.
 const app = new PIXI.Application({
-  width: 800, height: 600, backgroundColor: 0x1099bb, resolution: window.devicePixelRatio || 1,
+  width: 800, height: 600, backgroundColor: 0x061639, resolution: window.devicePixelRatio || 1,
 });
 document.body.appendChild(app.view);
-app.renderer.backgroundColor = 0x061639;
-app.renderer.view.style.position = "absolute";
-app.renderer.view.style.display = "block";
-app.renderer.autoResize = true
+//app.renderer.view.style.position = "absolute";
+//app.renderer.view.style.display = "block";
+//app.renderer.autoResize = true
 
-const container = new PIXI.Container();
-container.pivot.x = container.width / 2;
-container.pivot.y = container.height / 2;
-container.x = app.screen.width / 2;
-container.y = app.screen.height / 2;
-container.acceleration = new PIXI.Point(0, 0);
+//const container = new PIXI.Container();
+//container.pivot.x = container.width / 2;
+//container.pivot.y = container.height / 2;
+//container.x = app.screen.width / 2;
+//container.y = app.screen.height / 2;
+//container.acceleration = new PIXI.Point(0, 0);
 
 const player = new Ship({
   clientID: 1,
   image: "images/rocket.png", 
   width: 15,
   height: 20,
-  x: 0,
-  y: 0,
+  x: app.screen.width / 2,
+  y: app.screen.height / 2,
 })
 setup();
 
 
 function setup() {
-  player.sprite.acceleration = new PIXI.Point(player.x,player.y);
-  container.addChild(player.sprite);
-  app.stage.addChild(container);
+  //player.sprite.acceleration = new PIXI.Point(player.x,player.y);
+  //container.addChild(player.sprite);
+  app.stage.addChild(player.container);
 
   //Start the game loop 
   app.ticker.add(delta => gameLoop(delta));
   
-  Mouse.events.on('released', null, (buttonCode, event, mouseX, mouseY, mouseOriginX, mouseOriginY, mouseMoveX, mouseMoveY) => {
-    console.log(buttonCode, mouseOriginX, mouseOriginY, mouseX, mouseY, mouseMoveX, mouseMoveY);
-  });
+  //Mouse.events.on('released', null, (buttonCode, event, mouseX, mouseY, mouseOriginX, mouseOriginY, mouseMoveX, mouseMoveY) => {
+  //  console.log(buttonCode, mouseOriginX, mouseOriginY, mouseX, mouseY, mouseMoveX, mouseMoveY);
+  //});
 }
 
 function gameLoop(delta){
   //Update the current game state:
   input(delta);
+  player.render(delta);
 
   //var sprite = player.sprite;
   //sprite.acceleration.set(sprite.acceleration.x * 0.99, sprite.acceleration.y * 0.99);
   //sprite.x += sprite.acceleration.x * delta;
   //sprite.y += sprite.acceleration.y * delta;
 
-  container.acceleration.set(container.acceleration.x * 0.99, container.acceleration.y * 0.99);
-  container.x += container.acceleration.x * delta;
-  container.y += container.acceleration.y * delta;
+  //container.acceleration.set(container.acceleration.x * 0.99, container.acceleration.y * 0.99);
+  //container.x += container.acceleration.x * delta;
+  //container.y += container.acceleration.y * delta;
 }
 
 function input(delta) {
   // Keyboard
   if (Keyboard.isKeyDown('ArrowLeft', 'KeyA')) {
     //player.sprite.rotation -= 0.05 * delta;
-    container.rotation -= 0.05 * delta;
+    //container.rotation -= 0.05 * delta;
+    player.setRotation(-0.05 * delta);
   }
   if (Keyboard.isKeyDown('ArrowRight', 'KeyD')) {
     //player.sprite.rotation += 0.05 * delta;
-    container.rotation += 0.05 * delta;
+    player.setRotation(0.05 * delta);
+    //container.rotation += 0.05 * delta;
   }
   if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
+    player.thrust();
+
     //var sprite = player.sprite;
     //sprite.acceleration.set(0, -1);
 
-    container.acceleration.set(0, -1);
+    //container.acceleration.set(0, -1);
 
     console.log("up");
     //cat.y -= speed;
