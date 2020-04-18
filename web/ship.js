@@ -1,5 +1,7 @@
 import * as PIXI from 'pixi.js'
 
+const RADIAN_OFFSET = Math.PI/2;
+
 export class Ship {
   constructor({
     clientID: id, 
@@ -43,23 +45,27 @@ export class Ship {
     container.addChild(this.sprite);
     this.container = container;
 
-    this.heading.x = Math.cos(this.container.rotation - Math.PI/2);
-    this.heading.y = Math.sin(this.container.rotation - Math.PI/2);
+    this.heading.x = Math.cos(this.container.rotation - RADIAN_OFFSET);
+    this.heading.y = Math.sin(this.container.rotation - RADIAN_OFFSET);
   }
   
   render(delta) {
-    this.container.x += this.velocity.x * 0.99;
-    this.container.y += this.velocity.y * 0.99;
+    this.container.x += this.velocity.x;
+    this.container.y += this.velocity.y;
+    this.velocity.x *= 0.99;
+    this.velocity.y *= 0.99;
   }
   
   thrust() {
-    this.velocity.x += (this.heading.x) * 0.1;
-    this.velocity.y += (this.heading.y) * 0.1;
+    this.velocity.x += this.heading.x * 0.1;
+    this.velocity.y += this.heading.y * 0.1;
   }
 
   setRotation(radian) {
+    // rotate the parent container
     this.container.rotation += radian;
-    this.heading.x = Math.cos(this.container.rotation - Math.PI/2);
-    this.heading.y = Math.sin(this.container.rotation - Math.PI/2);
+    // set heading vector
+    this.heading.x = Math.cos(this.container.rotation - RADIAN_OFFSET);
+    this.heading.y = Math.sin(this.container.rotation - RADIAN_OFFSET);
   }
 }

@@ -21,7 +21,6 @@ const player = new Ship({
 })
 setup();
 
-
 function setup() {
   app.stage.addChild(player.container);
 
