@@ -20,6 +20,7 @@ container.pivot.x = container.width / 2;
 container.pivot.y = container.height / 2;
 container.x = app.screen.width / 2;
 container.y = app.screen.height / 2;
+container.acceleration = new PIXI.Point(0, 0);
 
 const player = new Ship({
   clientID: 1,
@@ -34,7 +35,6 @@ setup();
 
 function setup() {
   player.sprite.acceleration = new PIXI.Point(player.x,player.y);
-  player.sprite.mass = 1;
   container.addChild(player.sprite);
   app.stage.addChild(container);
 
@@ -49,10 +49,15 @@ function setup() {
 function gameLoop(delta){
   //Update the current game state:
   input(delta);
-  var sprite = player.sprite;
-  player.sprite.acceleration.set(player.sprite.acceleration.x * 0.99, player.sprite.acceleration.y * 0.99);
-  sprite.x += sprite.acceleration.x * delta;
-  sprite.y += sprite.acceleration.y * delta;
+
+  //var sprite = player.sprite;
+  //sprite.acceleration.set(sprite.acceleration.x * 0.99, sprite.acceleration.y * 0.99);
+  //sprite.x += sprite.acceleration.x * delta;
+  //sprite.y += sprite.acceleration.y * delta;
+
+  container.acceleration.set(container.acceleration.x * 0.99, container.acceleration.y * 0.99);
+  container.x += container.acceleration.x * delta;
+  container.y += container.acceleration.y * delta;
 }
 
 function input(delta) {
@@ -66,8 +71,10 @@ function input(delta) {
     container.rotation += 0.05 * delta;
   }
   if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
-    var sprite = player.sprite;
-    sprite.acceleration.set(0, -1);
+    //var sprite = player.sprite;
+    //sprite.acceleration.set(0, -1);
+
+    container.acceleration.set(0, -1);
 
     console.log("up");
     //cat.y -= speed;
