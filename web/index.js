@@ -43,6 +43,8 @@ for (let i = 0; i < starAmount; i++) {
     };
     star.sprite.anchor.x = 0.5;
     star.sprite.anchor.y = 0.7;
+    star.sprite.alpha = 0.7;
+    star.sprite.tint = Math.random() * 0xFFFFFF;
     randomizeStar(star, true);
     app.stage.addChild(star.sprite);
     stars.push(star);
