@@ -80,6 +80,7 @@ export class Ship {
     for (let i = this.particles.length-1; i >= 0; --i) {
       this.particles[i].update();
       if (this.particles[i].finished()) {
+        this.app.stage.removeChild(this.particles[i].sprite);
         this.particles.splice(i, 1);
       }
     }
