@@ -7,8 +7,6 @@ export class Ship {
   constructor({
     clientID: id, 
     image: img,
-    width: w,
-    height: h,
     x: x, 
     y: y, 
     app: app,
@@ -78,18 +76,14 @@ export class Ship {
 
     for (let i = 0; i < 5; ++i) {
       var particle = new Particle({
-        radius: 1, 
         x: this.container.x - (this.heading.x*6),
         y: this.container.y - (this.heading.y*6),
-        //velocityX: this.heading.x + (Math.floor(Math.random() * 21) -10) / 100,
-        //velocityX: this.heading.x + (Math.floor(Math.random() * 21) -10) / 100,
         velocityX: this.thruster.x * ((Math.floor(Math.random() * 51) -40) / 100),
         velocityY: this.thruster.y * ((Math.floor(Math.random() * 51) -40) / 100),
       });
 
       this.particles.push(particle);
       this.app.stage.addChild(particle.sprite);
-      //this.container.addChild(particle.sprite);
     }
   }
 

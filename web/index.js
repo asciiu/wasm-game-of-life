@@ -16,12 +16,10 @@ document.body.appendChild(app.view);
 
 const player = new Ship({
   clientID: 1,
+  app: app,
   image: "images/rocket.png", 
-  width: 15,
-  height: 20,
   x: app.screen.width / 2,
   y: app.screen.height / 2,
-  app: app,
 })
 setup();
 
