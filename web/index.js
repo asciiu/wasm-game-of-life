@@ -7,7 +7,10 @@ import { Ship } from './ship.js'
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container.
 const app = new PIXI.Application({
-  width: 800, height: 600, backgroundColor: 0x061639, resolution: window.devicePixelRatio || 1,
+  width: 800, 
+  height: 600, 
+  backgroundColor: 0x061639, 
+  resolution: window.devicePixelRatio || 1,
 });
 document.body.appendChild(app.view);
 
@@ -18,6 +21,7 @@ const player = new Ship({
   height: 20,
   x: app.screen.width / 2,
   y: app.screen.height / 2,
+  app: app,
 })
 setup();
 

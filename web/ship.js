@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import { Particle } from './particle.js'
 
 const RADIAN_OFFSET = Math.PI/2;
 
@@ -10,6 +11,7 @@ export class Ship {
     height: h,
     x: x, 
     y: y, 
+    app: app,
     velocityX: vx = 0,
     velocityX: vy = 0,
     radius: rad = 6,
@@ -17,6 +19,7 @@ export class Ship {
     heading: heading = 0,
     active = false
   }) {
+    this.app = app;
     this.clientID = id;
     this.radius = rad;
     this.rotation = radian;
@@ -25,6 +28,7 @@ export class Ship {
     this.isDestroyed = false;
     this.particles = [];
     this.heading = new PIXI.Point(0, 0);
+    this.thruster = new PIXI.Point(0, 0);
     this.velocity = new PIXI.Point(vx, vy);
 
     const sprite = PIXI.Sprite.from(img);
@@ -47,6 +51,10 @@ export class Ship {
 
     this.heading.x = Math.cos(this.container.rotation - RADIAN_OFFSET);
     this.heading.y = Math.sin(this.container.rotation - RADIAN_OFFSET);
+    this.thruster.x = Math.cos(this.container.rotation + RADIAN_OFFSET);
+    this.thruster.y = Math.sin(this.container.rotation + RADIAN_OFFSET);
+
+    this.particles = [];
   }
   
   render(delta) {
@@ -54,11 +62,35 @@ export class Ship {
     this.container.y += this.velocity.y;
     this.velocity.x *= 0.99;
     this.velocity.y *= 0.99;
+
+
+    for (let i = this.particles.length-1; i >= 0; --i) {
+      this.particles[i].update();
+      if (this.particles[i].finished()) {
+        this.particles.splice(i, 1);
+      }
+    }
   }
   
   thrust() {
     this.velocity.x += this.heading.x * 0.1;
     this.velocity.y += this.heading.y * 0.1;
+
+    for (let i = 0; i < 5; ++i) {
+      var particle = new Particle({
+        radius: 1, 
+        x: this.container.x - (this.heading.x*6),
+        y: this.container.y - (this.heading.y*6),
+        //velocityX: this.heading.x + (Math.floor(Math.random() * 21) -10) / 100,
+        //velocityX: this.heading.x + (Math.floor(Math.random() * 21) -10) / 100,
+        velocityX: this.thruster.x * ((Math.floor(Math.random() * 51) -40) / 100),
+        velocityY: this.thruster.y * ((Math.floor(Math.random() * 51) -40) / 100),
+      });
+
+      this.particles.push(particle);
+      this.app.stage.addChild(particle.sprite);
+      //this.container.addChild(particle.sprite);
+    }
   }
 
   setRotation(radian) {
@@ -67,5 +99,7 @@ export class Ship {
     // set heading vector
     this.heading.x = Math.cos(this.container.rotation - RADIAN_OFFSET);
     this.heading.y = Math.sin(this.container.rotation - RADIAN_OFFSET);
+    this.thruster.x = Math.cos(this.container.rotation + RADIAN_OFFSET);
+    this.thruster.y = Math.sin(this.container.rotation + RADIAN_OFFSET);
   }
 }
