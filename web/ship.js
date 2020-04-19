@@ -54,12 +54,27 @@ export class Ship {
 
     this.particles = [];
   }
+
+  edges() {
+    if (this.container.x > this.app.screen.width + this.sprite.width) {
+      this.container.x = -this.sprite.width;
+    } else if (this.container.x < -this.sprite.width) {
+      this.container.x = this.app.screen.width + this.sprite.width;
+    }
+    if (this.container.y > this.app.screen.height + this.sprite.width) {
+      this.container.y = -this.sprite.width;
+    } else if (this.container.y < -this.sprite.width) {
+      this.container.y = this.app.screen.height + this.sprite.width;
+    }
+  }
   
   render(delta) {
     this.container.x += this.velocity.x;
     this.container.y += this.velocity.y;
     this.velocity.x *= 0.99;
     this.velocity.y *= 0.99;
+
+    this.edges();
 
 
     for (let i = this.particles.length-1; i >= 0; --i) {
