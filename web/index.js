@@ -77,26 +77,25 @@ function gameLoop(delta){
   // Simple easing. This should be changed to proper easing function when used for real.
   speed += (warpSpeed - speed) / 20;
   cameraZ += delta * 10 * (speed + baseSpeed);
-  for (let i = 0; i < starAmount; i++) {
-      const star = stars[i];
-      if (star.z < cameraZ) randomizeStar(star);
+  stars.forEach(function(star) {
+    if (star.z < cameraZ) randomizeStar(star);
   
-      // Map star 3d position to 2d with really simple projection
-      const z = star.z - cameraZ;
-      star.sprite.x = star.x * (fov / z) * app.renderer.screen.width + app.renderer.screen.width / 2;
-      star.sprite.y = star.y * (fov / z) * app.renderer.screen.width + app.renderer.screen.height / 2;
+    // Map star 3d position to 2d with really simple projection
+    const z = star.z - cameraZ;
+    star.sprite.x = star.x * (fov / z) * app.renderer.screen.width + app.renderer.screen.width / 2;
+    star.sprite.y = star.y * (fov / z) * app.renderer.screen.width + app.renderer.screen.height / 2;
   
-      // Calculate star scale & rotation.
-      const dxCenter = star.sprite.x - app.renderer.screen.width / 2;
-      const dyCenter = star.sprite.y - app.renderer.screen.height / 2;
-      const distanceCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
-      const distanceScale = Math.max(0, (2000 - z) / 2000);
-      star.sprite.scale.x = distanceScale * starBaseSize;
-      // Star is looking towards center so that y axis is towards center.
-      // Scale the star depending on how fast we are moving, what the stretchfactor is and depending on how far away it is from the center.
-      star.sprite.scale.y = distanceScale * starBaseSize + distanceScale * speed * starStretch * distanceCenter / app.renderer.screen.width;
-      star.sprite.rotation = Math.atan2(dyCenter, dxCenter) + Math.PI / 2;
-  }
+    // Calculate star scale & rotation.
+    const dxCenter = star.sprite.x - app.renderer.screen.width / 2;
+    const dyCenter = star.sprite.y - app.renderer.screen.height / 2;
+    const distanceCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
+    const distanceScale = Math.max(0, (2000 - z) / 2000);
+    star.sprite.scale.x = distanceScale * starBaseSize;
+    // Star is looking towards center so that y axis is towards center.
+    // Scale the star depending on how fast we are moving, what the stretchfactor is and depending on how far away it is from the center.
+    star.sprite.scale.y = distanceScale * starBaseSize + distanceScale * speed * starStretch * distanceCenter / app.renderer.screen.width;
+    star.sprite.rotation = Math.atan2(dyCenter, dxCenter) + Math.PI / 2;
+  })
 
   torpedos.forEach(function(torpedo) {
     torpedo.render();
@@ -104,16 +103,6 @@ function gameLoop(delta){
       app.stage.removeChild(torpedo.sprite);
     }
   })
-
-  //for (let i = 0; i < torpedos.length; ++i) {
-  //  
-  //  torpedos[i].render();
-  //  if (t)
-  //  //if (this.particles[i].finished()) {
-  //    //this.app.stage.removeChild(this.particles[i].sprite);
-  //    //this.particles.splice(i, 1);
-  //  //}
-  //}
 }
 
 function input(delta) {
