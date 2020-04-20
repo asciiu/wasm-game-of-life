@@ -10,24 +10,13 @@ export class Ship {
     x: x, 
     y: y, 
     app: app,
-    velocityX: vx = 0,
-    velocityX: vy = 0,
-    radius: rad = 6,
-    rotation: radian = 0,
-    heading: heading = 0,
-    active = false
   }) {
     this.app = app;
     this.clientID = id;
-    this.radius = rad;
-    this.rotation = radian;
-    this.active = active;
-    this.isBoosting = false;
-    this.isDestroyed = false;
     this.particles = [];
     this.heading = new PIXI.Point(0, 0);
     this.thruster = new PIXI.Point(0, 0);
-    this.velocity = new PIXI.Point(vx, vy);
+    this.velocity = new PIXI.Point(0, 0);
 
     const sprite = PIXI.Sprite.from(img);
     // set the anchor point so the texture is centerd on the sprite
@@ -76,9 +65,8 @@ export class Ship {
 
     this.edges();
 
-
     for (let i = this.particles.length-1; i >= 0; --i) {
-      this.particles[i].update();
+      this.particles[i].render();
       if (this.particles[i].finished()) {
         this.app.stage.removeChild(this.particles[i].sprite);
         this.particles.splice(i, 1);
@@ -94,8 +82,11 @@ export class Ship {
       var particle = new Particle({
         x: this.container.x - (this.heading.x*6),
         y: this.container.y - (this.heading.y*6),
+        width: 1,
+        height: 1,
         velocityX: this.thruster.x * ((Math.floor(Math.random() * 51) -40) / 100),
         velocityY: this.thruster.y * ((Math.floor(Math.random() * 51) -40) / 100),
+        projectile: false,
       });
 
       this.particles.push(particle);
@@ -111,5 +102,17 @@ export class Ship {
     this.heading.y = Math.sin(this.container.rotation - RADIAN_OFFSET);
     this.thruster.x = Math.cos(this.container.rotation + RADIAN_OFFSET);
     this.thruster.y = Math.sin(this.container.rotation + RADIAN_OFFSET);
+  }
+
+  torpedo() {
+    return new Particle({
+      x: this.container.x + (this.heading.x*6),
+      y: this.container.y + (this.heading.y*6),
+      width: 2,
+      height: 2,
+      velocityX: this.heading.x * 5,
+      velocityY: this.heading.y * 5,
+      projectile: true,
+    });
   }
 }

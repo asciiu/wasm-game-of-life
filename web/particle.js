@@ -6,22 +6,39 @@ export class Particle {
         y: y,
         velocityX: vx, 
         velocityY: vy,
+        width: w,
+        height: h,
+        projectile: isProjectile,
     }) {
         this.velocity = new PIXI.Point(vx, vy);
         this.sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
-        this.sprite.width = 1;
-        this.sprite.height = 1;
+        this.sprite.width = w;
+        this.sprite.height = h;
         this.sprite.x = x;
         this.sprite.y = y;
         this.sprite.anchor.set(0.5);
         this.sprite.alpha = 0.9;
+        this.projectile = isProjectile;
     }
 
-    update() {
+    offScreen(screenWidth, screenHeight) {
+        if (this.sprite.x > screenWidth || 
+            this.sprite.y > screenHeight || 
+            this.sprite.x < 0 || 
+            this.sprite.y < 0) {
+            return true;
+        } 
+        return false;
+    }
+
+    render() {
         this.sprite.x += this.velocity.x;
         this.sprite.y += this.velocity.y;
-        this.sprite.alpha -= 0.03;
+
+        if (!this.projectile) {
+            this.sprite.alpha -= 0.03;
+        }
     }
 
     finished() {

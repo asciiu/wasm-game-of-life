@@ -34,6 +34,7 @@ const starStretch = 5;
 const starBaseSize = 0.05;
 
 const stars = [];
+const torpedos = [];
 for (let i = 0; i < starAmount; i++) {
     const star = {
         sprite: new PIXI.Sprite(starTexture),
@@ -96,6 +97,23 @@ function gameLoop(delta){
       star.sprite.scale.y = distanceScale * starBaseSize + distanceScale * speed * starStretch * distanceCenter / app.renderer.screen.width;
       star.sprite.rotation = Math.atan2(dyCenter, dxCenter) + Math.PI / 2;
   }
+
+  torpedos.forEach(function(torpedo) {
+    torpedo.render();
+    if (torpedo.offScreen(app.screen.width, app.screen.height)) {
+      app.stage.removeChild(torpedo.sprite);
+    }
+  })
+
+  //for (let i = 0; i < torpedos.length; ++i) {
+  //  
+  //  torpedos[i].render();
+  //  if (t)
+  //  //if (this.particles[i].finished()) {
+  //    //this.app.stage.removeChild(this.particles[i].sprite);
+  //    //this.particles.splice(i, 1);
+  //  //}
+  //}
 }
 
 function input(delta) {
@@ -108,6 +126,11 @@ function input(delta) {
   }
   if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
     player.thrust();
+  }
+  if (Keyboard.isKeyDown('Space')) {
+    var torpedo = player.torpedo();
+    app.stage.addChild(torpedo.sprite);
+    torpedos.push(torpedo);
   }
 
   Keyboard.update();
