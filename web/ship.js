@@ -57,6 +57,7 @@ export class Ship {
     }
   }
   
+  
   render(delta) {
     this.container.x += this.velocity.x;
     this.container.y += this.velocity.y;

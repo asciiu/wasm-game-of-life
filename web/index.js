@@ -116,10 +116,16 @@ function input(delta) {
   if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
     player.thrust();
   }
-  if (Keyboard.isKeyDown('Space')) {
+  if (Keyboard.isKeyDown('KeyF')) {
     var torpedo = player.torpedo();
     app.stage.addChild(torpedo.sprite);
     torpedos.push(torpedo);
+  }
+  if (Keyboard.isKeyDown('Space')) {
+    warpSpeed = 1;
+    setTimeout( function() {
+      warpSpeed = 0;
+    }, 5000);
   }
 
   Keyboard.update();
