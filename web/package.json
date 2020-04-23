@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/rustwasm/create-wasm-app#readme",
   "dependencies": {
+    "babylonjs": "^4.1.0",
     "kind-of": ">=6.0.3",
     "pixi.js": "^5.2.1",
     "pixi.js-keyboard": "^1.0.9",
