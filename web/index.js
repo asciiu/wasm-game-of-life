@@ -41,8 +41,9 @@ if (BABYLON.Engine.isSupported()) {
       }
   };
 
-  var random = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-  var random2 = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+  var terrain = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+  var clouds = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+  
   var updateRandom = function(random) {
       var context = random.getContext();
       var data = context.getImageData(0, 0, 512, 512);
@@ -52,16 +53,17 @@ if (BABYLON.Engine.isSupported()) {
       context.putImageData(data, 0, 0);
       random.update()
   };
+
   var skybox = BABYLON.Mesh.CreateBox("skyBox", 1e4, scene);
   var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
   skyboxMaterial.backFaceCulling = false;
   var files = [
-    "./Space/space_left.jpg", 
-    "./Space/space_up.jpg", 
-    "./Space/space_front.jpg", 
-    "./Space/space_right.jpg", 
-    "./Space/space_down.jpg", 
-    "./Space/space_back.jpg"];
+    "./space/space_left.jpg", 
+    "./space/space_up.jpg", 
+    "./space/space_front.jpg", 
+    "./space/space_right.jpg", 
+    "./space/space_down.jpg", 
+    "./space/space_back.jpg"];
 
   skyboxMaterial.reflectionTexture = BABYLON.CubeTexture.CreateFromImages(files, scene);
   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
@@ -70,7 +72,6 @@ if (BABYLON.Engine.isSupported()) {
   skyboxMaterial.disableLighting = true;
   skybox.material = skyboxMaterial;
 
-  //BABYLON.Engine.ShadersRepository = "/src/shaders/";
   var lensFlareSystem = new BABYLON.LensFlareSystem("lensFlareSystem", sun, scene);
   new BABYLON.LensFlare(.1, 0, new BABYLON.Color3(1, 1, 1), "space/Flare3.png", lensFlareSystem);
   new BABYLON.LensFlare(.4, .1, new BABYLON.Color3(1, 1, 1), "space/Flare.png", lensFlareSystem);
@@ -117,12 +118,8 @@ if (BABYLON.Engine.isSupported()) {
   });
 
   var generateBiome = function() {
-      if (noiseTexture) {
-          noiseTexture.dispose();
-          cloudTexture.dispose()
-      }
-      updateRandom(random);
-      updateRandom(random2);
+      updateRandom(terrain);
+      updateRandom(clouds);
       noiseTexture = new BABYLON.ProceduralTexture("noise", options.mapSize, "./space/noise", scene, null, true, true);
       noiseTexture.setColor3("upperColor", options.upperColor);
       noiseTexture.setColor3("lowerColor", options.lowerColor);
@@ -130,13 +127,13 @@ if (BABYLON.Engine.isSupported()) {
       noiseTexture.setFloat("maxResolution", options.maxResolution);
       noiseTexture.setFloat("seed", options.seed);
       noiseTexture.setVector2("lowerClamp", options.lowerClamp);
-      noiseTexture.setTexture("randomSampler", random);
+      noiseTexture.setTexture("randomSampler", terrain);
       noiseTexture.setVector2("range", options.range);
       noiseTexture.setVector3("options", new BABYLON.Vector3(options.directNoise ? 1 : 0, options.lowerClip.x, options.lowerClip.y));
       noiseTexture.refreshRate = 0;
       shaderMaterial.setTexture("textureSampler", noiseTexture);
       cloudTexture = new BABYLON.ProceduralTexture("cloud", options.mapSize, "./space/noise", scene, null, true, true);
-      cloudTexture.setTexture("randomSampler", random2);
+      cloudTexture.setTexture("randomSampler", clouds);
       cloudTexture.setFloat("mapSize", options.mapSize);
       cloudTexture.setFloat("maxResolution", 256);
       cloudTexture.setFloat("seed", options.cloudSeed);
