@@ -7,9 +7,9 @@ if (BABYLON.Engine.isSupported()) {
   var canvas = document.getElementById("renderCanvas");
   var engine = new BABYLON.Engine(canvas, true);
   var scene = new BABYLON.Scene(engine);
-  var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), scene);
+  var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 5, 150), scene);
 
-  camera.setPosition(new BABYLON.Vector3(0, 5, 150));
+  camera.setTarget(BABYLON.Vector3.Zero());
   camera.attachControl(canvas, false);
 
   var sun = new Sun(scene);
