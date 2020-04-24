@@ -42,6 +42,7 @@ export class Planet {
         var cloudTexture;
       
         var planet = BABYLON.Mesh.CreateSphere("planet", 64, 30, scene);
+        planet.checkCollisions = true;
         var planetImpostor = BABYLON.Mesh.CreateSphere("planetImpostor", 16, 28, scene);
         planetImpostor.isBlocker = true;
         planetImpostor.material = new BABYLON.StandardMaterial("impostor", scene);
