@@ -7,6 +7,9 @@ export class Planet {
         x: x,
         y: y,
         z: z,
+        ox: ox,
+        oy: oy,
+        oz: oz,
         radius: radius,
         biome: biome,
     }) {
@@ -47,20 +50,23 @@ export class Planet {
         var cloudTexture;
 
         var diameter = radius * 2;
+        var cx =  (ox > 0) ? ox * Math.cos(0): x;
+        var cy =  (oy > 0) ? oy * Math.cos(0): y;
+        var cz =  (oz > 0) ? oz * Math.sin(0): z;
 
         var planetShell = BABYLON.Mesh.CreateSphere("planet", 64, diameter, scene);
-        planetShell.position.x = x;
-        planetShell.position.y = y;
-        planetShell.position.z = z;
+        planetShell.position.x = cx;
+        planetShell.position.y = cy;
+        planetShell.position.z = cz;
 
         // the diameter should be 2 less than the shell 
         var planetBody = BABYLON.Mesh.CreateSphere("planetBody", 16, diameter - 3, scene);
         planetBody.material = new BABYLON.StandardMaterial("impostor", scene);
         planetBody.checkCollisions = true;
         planetBody.isBlocker = true;
-        planetBody.position.x = x;
-        planetBody.position.y = y;
-        planetBody.position.z = z;
+        planetBody.position.x = cx;
+        planetBody.position.y = cy;
+        planetBody.position.z = cz;
 
         var shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, {
             vertex: "./space/planet",
@@ -213,5 +219,192 @@ export class Planet {
         };
 
         generateBiome(biome);
+
+        var cx =  ox * Math.cos(0);
+        var cy =  oy * Math.cos(0);
+        var cz =  oz * Math.sin(0);
+        this.orbitCenter = new BABYLON.Vector3(ox, oy, oz);
+        this.planetShell = planetShell;
+        this.planetBody = planetBody;
+        this.scene = scene;
+        this.planetShell.animations = [];
+        this.planetBody.animations = [];
+        this.radian = 0;
+    }
+
+    moveX(x) {
+        var animationX = new BABYLON.Animation(
+            "myAnimation",
+            "position.x",
+            30,
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: this.planetShell.position.x
+        });
+
+        keys.push({
+            frame: 100,
+            value: x
+        });
+
+        animationX.setKeys(keys);
+        this.planetShell.animations.push(animationX);
+        this.planetBody.animations.push(animationX);
+    }
+
+    moveY(y) {
+        var animationY = new BABYLON.Animation(
+            "myAnimation",
+            "position.y",
+            30,
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: this.planetShell.position.y 
+        });
+
+        keys.push({
+            frame: 100,
+            value: y
+        });
+
+        animationY.setKeys(keys);
+        this.planetShell.animations.push(animationY);
+        this.planetBody.animations.push(animationY);
+    }
+
+    moveZ(z) {
+        var animationZ = new BABYLON.Animation(
+            "myAnimation",
+            "position.z",
+            30,
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: this.planetShell.position.z
+        });
+
+        keys.push({
+            frame: 100,
+            value: z
+        });
+
+        animationZ.setKeys(keys);
+        this.planetShell.animations.push(animationZ);
+        this.planetBody.animations.push(animationZ);
+    }
+
+    move(dx, dy, dz) {
+        this.moveX(dx);
+        this.moveY(dy);
+        this.moveZ(dz);
+
+        var me = this;
+        this.scene.beginAnimation(this.mesh, 0, 100, false, 1, function() {
+            me.move(1, 0, 1);
+        });
+    }
+
+    rotateX(radian) {
+        var animation = new BABYLON.Animation(
+            "myAnimation",
+            "rotation.x",
+            30,
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: this.planetShell.rotation.x
+        });
+
+        keys.push({
+            frame: 100,
+            value: -radian 
+        });
+
+        animation.setKeys(keys);
+        this.planetShell.animations.push(animation);
+        this.planetBody.animations.push(animationX);
+    }
+
+    rotateY(radian) {
+        var animation = new BABYLON.Animation(
+            "myAnimation",
+            "rotation.y",
+            30,
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: this.planetShell.rotation.y
+        });
+
+        keys.push({
+            frame: 100,
+            value: -radian 
+        });
+
+        animation.setKeys(keys);
+        this.planetShell.animations.push(animation);
+        this.planetBody.animations.push(animationX);
+    }
+
+    rotateZ(radian) {
+        var animation = new BABYLON.Animation(
+            "myAnimation",
+            "rotation.z",
+            30,
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: this.planetShell.rotation.z
+        });
+
+        keys.push({
+            frame: 100,
+            value: -radian 
+        });
+
+        animation.setKeys(keys);
+        this.planetShell.animations.push(animation);
+        this.planetBody.animations.push(animationX);
+    }
+
+    orbit(radius) {
+        this.radian -= Math.PI/40;
+        var x = this.orbitCenter.x + radius * Math.cos(this.radian);
+        var y = this.orbitCenter.y + radius * Math.cos(this.radian);
+        var z = this.orbitCenter.z + radius * Math.sin(this.radian);
+        this.moveX(x);
+        this.moveY(y);
+        this.moveZ(z);
+        //this.rotateX(-this.radian);
+        //this.rotateY(this.radian);
+        //this.rotateZ(-this.radian);
+
+        var me = this;
+        this.scene.beginAnimation(this.planetShell, 0, 100, false, 3, function() {
+             me.orbit(radius);
+        });
+        this.scene.beginAnimation(this.planetBody, 0, 100, false, 3, function() {
+        //     me.orbit(radius);
+        });
     }
 }

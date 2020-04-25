@@ -21,9 +21,10 @@ if (BABYLON.Engine.isSupported()) {
   var background = new Background(scene);
   var sun = new Sun(scene, {x: 50, y: 50, z: 30});
   var planet = new Planet(scene, {camera: camera, light: sun.light, x: -40, y: -20, z: -100, radius: 30, biome: "earth"});
-  var moon = new Planet(scene, {camera: camera, light: sun.light, x: -60, y: -10, z: -10, radius: 5, biome: "moon"});
+  var moon = new Planet(scene, {camera: camera, light: sun.light, x: -60, y: -10, z: -10, ox: -40, oy: -20, oz: -100, radius: 5, biome: "moon"});
   var npc = new NPC(scene);
   npc.orbit(30);
+  moon.orbit(50);
 
   new Player(scene, {camera: camera, x: 0, y: -10, z: 30})
 
