@@ -387,8 +387,8 @@ export class Planet {
         this.planetBody.animations.push(animationX);
     }
 
-    orbit(radius) {
-        this.radian -= Math.PI/40;
+    orbit(radius, radian) {
+        this.radian -= radian;
         var x = this.orbitCenter.x + radius * Math.cos(this.radian);
         var y = this.orbitCenter.y + radius * Math.cos(this.radian);
         var z = this.orbitCenter.z + radius * Math.sin(this.radian);
@@ -401,7 +401,7 @@ export class Planet {
 
         var me = this;
         this.scene.beginAnimation(this.planetShell, 0, 100, false, 3, function() {
-             me.orbit(radius);
+             me.orbit(radius, radian);
         });
         this.scene.beginAnimation(this.planetBody, 0, 100, false, 3, function() {
         //     me.orbit(radius);
