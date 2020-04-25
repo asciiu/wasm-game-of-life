@@ -7,6 +7,7 @@ export class Planet {
         x: x,
         y: y,
         z: z,
+        radius: radius,
     }) {
         var options;
         var earthSetup = function() {
@@ -46,13 +47,16 @@ export class Planet {
       
         var noiseTexture;
         var cloudTexture;
+
+        var diameter = radius *2;
       
-        var planetShell = BABYLON.Mesh.CreateSphere("planet", 64, 30, scene);
+        var planetShell = BABYLON.Mesh.CreateSphere("planet", 64, diameter, scene);
         planetShell.position.x = x;
         planetShell.position.y = y;
         planetShell.position.z = z;
 
-        var planetBody = BABYLON.Mesh.CreateSphere("planetBody", 16, 28, scene);
+        // the diameter should be 2 less than the shell 
+        var planetBody = BABYLON.Mesh.CreateSphere("planetBody", 16, diameter-3, scene);
         planetBody.material = new BABYLON.StandardMaterial("impostor", scene);
         planetBody.checkCollisions = true;
         planetBody.isBlocker = true;

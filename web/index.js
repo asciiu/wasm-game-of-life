@@ -20,7 +20,7 @@ if (BABYLON.Engine.isSupported()) {
 
   var background = new Background(scene);
   var sun = new Sun(scene, {x: 50, y: 50, z: 30});
-  var planet = new Planet(scene, {camera: camera, light: sun.light, x: -40, y: -20, z: -100});
+  var planet = new Planet(scene, {camera: camera, light: sun.light, x: -40, y: -20, z: -100, radius: 30});
   var npc = new NPC(scene);
   npc.orbit(30);
 
