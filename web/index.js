@@ -21,6 +21,7 @@ if (BABYLON.Engine.isSupported()) {
   var planet = new Planet(scene, camera, sun.light);
   var background = new Background(scene);
   var npc = new NPC(scene);
+  npc.orbit(50);
 
   var myBox = BABYLON.MeshBuilder.CreateBox("player", {height: 3, width: 3, depth: 3}, scene);
   myBox.position.z = 30;
