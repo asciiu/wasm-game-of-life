@@ -1,7 +1,13 @@
 import * as BABYLON from 'babylonjs';
 
 export class Planet {
-    constructor(scene, camera, light) {
+    constructor(scene, {
+        camera: camera, 
+        light: light,
+        x: x,
+        y: y,
+        z: z,
+    }) {
         var options;
         var earthSetup = function() {
             options = {
@@ -28,7 +34,7 @@ export class Planet {
         var terrain = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         var clouds = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
-        var updateRandom = function(random) {
+        var updateRandomSurface = function(random) {
             var context = random.getContext();
             var data = context.getImageData(0, 0, 512, 512);
             for (var i = 0; i < 512 * 512 * 4; i++) {
@@ -41,11 +47,19 @@ export class Planet {
         var noiseTexture;
         var cloudTexture;
       
-        var planet = BABYLON.Mesh.CreateSphere("planet", 64, 30, scene);
-        planet.checkCollisions = true;
-        var planetImpostor = BABYLON.Mesh.CreateSphere("planetImpostor", 16, 28, scene);
-        planetImpostor.isBlocker = true;
-        planetImpostor.material = new BABYLON.StandardMaterial("impostor", scene);
+        var planetShell = BABYLON.Mesh.CreateSphere("planet", 64, 30, scene);
+        planetShell.position.x = x;
+        planetShell.position.y = y;
+        planetShell.position.z = z;
+
+        var planetBody = BABYLON.Mesh.CreateSphere("planetBody", 16, 28, scene);
+        planetBody.material = new BABYLON.StandardMaterial("impostor", scene);
+        planetBody.checkCollisions = true;
+        planetBody.isBlocker = true;
+        planetBody.position.x = x;
+        planetBody.position.y = y;
+        planetBody.position.z = z;
+
         var shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, {
             vertex: "./space/planet",
             fragment: "./space/planet"
@@ -56,25 +70,25 @@ export class Planet {
         });
         shaderMaterial.setVector3("cameraPosition", camera.position);
         shaderMaterial.setVector3("lightPosition", light.position);
-        planet.material = shaderMaterial;
+        planetShell.material = shaderMaterial;
       
         var shadowGenerator = new BABYLON.ShadowGenerator(2048, light);
-        shadowGenerator.getShadowMap().renderList.push(planetImpostor);
+        shadowGenerator.getShadowMap().renderList.push(planetBody);
         shadowGenerator.setDarkness(.3);
         shadowGenerator.usePoissonSampling = true;
         var angle = 0;
       
         scene.registerBeforeRender(function() {
             var ratio = scene.getAnimationRatio();
-            planet.rotation.y += .001 * ratio;
+            planetShell.rotation.y += .001 * ratio;
             shaderMaterial.setMatrix("rotation", BABYLON.Matrix.RotationY(angle));
             angle -= 4e-4 * ratio;
             shaderMaterial.setVector3("options", new BABYLON.Vector3(options.clouds, options.groundAlbedo, options.cloudAlbedo))
         });
       
         var generateBiome = function() {
-            updateRandom(terrain);
-            updateRandom(clouds);
+            updateRandomSurface(terrain);
+            updateRandomSurface(clouds);
             noiseTexture = new BABYLON.ProceduralTexture("noise", options.mapSize, "./space/noise", scene, null, true, true);
             noiseTexture.setColor3("upperColor", options.upperColor);
             noiseTexture.setColor3("lowerColor", options.lowerColor);

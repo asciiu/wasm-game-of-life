@@ -1,8 +1,12 @@
 import * as BABYLON from 'babylonjs';
 
 export class Sun {
-    constructor(scene) {
-        var sun = new BABYLON.PointLight("sun", new BABYLON.Vector3(50, 50, 30), scene);
+    constructor(scene, {
+        x: x,
+        y: y,
+        z: z,
+    }) {
+        var sun = new BABYLON.PointLight("sun", new BABYLON.Vector3(x, x, z), scene);
         var lensFlareSystem = new BABYLON.LensFlareSystem("lensFlareSystem", sun, scene);
         new BABYLON.LensFlare(.1, 0, new BABYLON.Color3(1, 1, 1), "space/Flare3.png", lensFlareSystem);
         new BABYLON.LensFlare(.4, .1, new BABYLON.Color3(1, 1, 1), "space/Flare.png", lensFlareSystem);

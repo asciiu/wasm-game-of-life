@@ -1,14 +1,15 @@
 import * as BABYLON from 'babylonjs';
-import { Planet } from './planet.js';
-import { Background } from './background.js';
-import { Sun } from './sun.js';
-import { NPC } from './npc.js';
+import { Planet } from './src/planet.js';
+import { Background } from './src/background.js';
+import { Sun } from './src/sun.js';
+import { NPC } from './src/npc.js';
+import { Player } from './src/player.js';
 
 if (BABYLON.Engine.isSupported()) {
   var canvas = document.getElementById("renderCanvas");
   var engine = new BABYLON.Engine(canvas, true);
   var scene = new BABYLON.Scene(engine);
-  var camera = new BABYLON.UniversalCamera("universalCamera", new BABYLON.Vector3(0, 0, 150), scene);
+  var camera = new BABYLON.UniversalCamera("universalCamera", new BABYLON.Vector3(0, 0, 170), scene);
 
   camera.setTarget(BABYLON.Vector3.Zero());
   camera.attachControl(canvas, false);
@@ -17,19 +18,13 @@ if (BABYLON.Engine.isSupported()) {
   scene.collisionsEnabled = true;
   camera.checkCollisions = true;
 
-  var sun = new Sun(scene);
-  var planet = new Planet(scene, camera, sun.light);
   var background = new Background(scene);
+  var sun = new Sun(scene, {x: 50, y: 50, z: 30});
+  var planet = new Planet(scene, {camera: camera, light: sun.light, x: -40, y: -20, z: -100});
   var npc = new NPC(scene);
-  npc.orbit(50);
+  npc.orbit(30);
 
-  var myBox = BABYLON.MeshBuilder.CreateBox("player", {height: 3, width: 3, depth: 3}, scene);
-  myBox.position.z = 30;
-  myBox.position.y = -10;
-  myBox.parent = camera;
-
-
-
+  new Player(scene, {camera: camera, x: 0, y: -10, z: 30})
 
   window.addEventListener("resize", function() {
     engine.resize()
