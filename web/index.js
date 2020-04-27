@@ -19,14 +19,21 @@ if (BABYLON.Engine.isSupported()) {
   camera.checkCollisions = true;
 
   var background = new Background(scene);
-  var sun = new Sun(scene, {x: 50, y: 50, z: 30});
+  var sun = new Sun(scene, {x: 100, y: 100, z: 100});
   var planet = new Planet(scene, {camera: camera, light: sun.light, x: -40, y: -20, z: -100, radius: 30, biome: "earth"});
   var moon1 = new Planet(scene, {camera: camera, light: sun.light, x: -60, y: -10, z: -10, ox: -40, oy: -20, oz: -100, radius: 5, biome: "moon"});
   var moon2 = new Planet(scene, {camera: camera, light: sun.light, x: -60, y: -10, z: -20, ox: -30, oy: -10, oz: -60, radius: 2, biome: "volcanic"});
+
+  var shadowGenerator = new BABYLON.ShadowGenerator(1024, sun.light);
+  shadowGenerator.usePoissonSampling = true;
+  shadowGenerator.addShadowCaster(planet.planetShell);
+  shadowGenerator.addShadowCaster(moon1.planetShell);
+  shadowGenerator.addShadowCaster(moon2.planetShell);
+
   //var npc = new NPC(scene);
   //npc.orbit(30);
-  moon1.orbit(50, Math.PI/40);
-  moon2.orbit(70, Math.PI/160);
+  moon1.orbit(50, Math.PI/55);
+  moon2.orbit(90, Math.PI/160);
 
   new Player(scene, {camera: camera, x: 0, y: -10, z: 30})
 

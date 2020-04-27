@@ -20,21 +20,19 @@ export class Planet {
             upperColor: new BABYLON.Color3(2, 1, 0),
             lowerColor: new BABYLON.Color3(0, .2, 1),
             haloColor: new BABYLON.Color3(0, .2, 1),
-            maxResolution: 128,
+            maxResolution: 64,
             seed: .3,
             cloudSeed: .55,
             lowerClamp: new BABYLON.Vector2(.6, 1),
-            groundAlbedo: 1.2,
-            cloudAlbedo: 1,
-            rings: false,
-            ringsColor: new BABYLON.Color3(.6, .6, .6),
+            groundAlbedo: 1.1,
+            cloudAlbedo: .9,
             directNoise: false,
             lowerClip: new BABYLON.Vector2(0, 0),
             range: new BABYLON.Vector2(.3, .35)
         }
 
-        var terrain = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        var clouds = new BABYLON.DynamicTexture("random", 512, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        var terrain = new BABYLON.DynamicTexture("random", 128, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        var clouds = new BABYLON.DynamicTexture("random", 128, scene, false, BABYLON.Texture.NEAREST_SAMPLINGMODE);
 
         var updateRandomSurface = function (random) {
             var context = random.getContext();
@@ -54,19 +52,20 @@ export class Planet {
         var cy =  (oy > 0) ? oy * Math.cos(0): y;
         var cz =  (oz > 0) ? oz * Math.sin(0): z;
 
-        var planetShell = BABYLON.Mesh.CreateSphere("planet", 64, diameter, scene);
+        var planetShell = BABYLON.Mesh.CreateSphere("planet", 64, diameter, scene, false, BABYLON.Mesh.FRONTSIDE);
         planetShell.position.x = cx;
         planetShell.position.y = cy;
         planetShell.position.z = cz;
+        planetShell.receiveShadows = true;
+        planetShell.checkCollisions = true;
 
-        // the diameter should be 2 less than the shell 
-        var planetBody = BABYLON.Mesh.CreateSphere("planetBody", 16, diameter - 3, scene);
-        planetBody.material = new BABYLON.StandardMaterial("impostor", scene);
-        planetBody.checkCollisions = true;
-        planetBody.isBlocker = true;
-        planetBody.position.x = cx;
-        planetBody.position.y = cy;
-        planetBody.position.z = cz;
+        // the diameter should be 3 less than the shell 
+        //var planetBody = BABYLON.Mesh.CreateSphere("planetBody", 32, diameter-3, scene);
+        //planetBody.isBlocker = true;
+        //planetBody.checkCollisions = true;
+        //planetBody.position.x = cx;
+        //planetBody.position.y = cy;
+        //planetBody.position.z = cz;
 
         var shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, {
             vertex: "./space/planet",
@@ -79,13 +78,8 @@ export class Planet {
         shaderMaterial.setVector3("cameraPosition", camera.position);
         shaderMaterial.setVector3("lightPosition", light.position);
         planetShell.material = shaderMaterial;
-
-        var shadowGenerator = new BABYLON.ShadowGenerator(2048, light);
-        shadowGenerator.getShadowMap().renderList.push(planetBody);
-        shadowGenerator.setDarkness(.3);
-        shadowGenerator.usePoissonSampling = true;
+        
         var angle = 0;
-
         scene.registerBeforeRender(function () {
             var ratio = scene.getAnimationRatio();
             planetShell.rotation.y += .001 * ratio;
@@ -94,15 +88,14 @@ export class Planet {
             shaderMaterial.setVector3("options", new BABYLON.Vector3(options.clouds, options.groundAlbedo, options.cloudAlbedo))
         });
 
-        var generateBiome = function (biome) {
-
+        var generateBiome = function(biome) {
             switch (biome) {
                 case "earth":
                     //earthSetup();
                     break;
                 case "volcanic":
                     options.upperColor = new BABYLON.Color3(.9, .45, .45);
-                    options.lowerColor = new BABYLON.Color3(1, 0, 0);
+                    options.lowerColor = new BABYLON.Color3(.6, 0, 0);
                     options.haloColor = new BABYLON.Color3(1, 0, .3);
                     options.seed = .3;
                     options.cloudSeed = .6;
@@ -193,6 +186,10 @@ export class Planet {
                     break
             }
 
+            if (noiseTexture) {
+                noiseTexture.dispose();
+                cloudTexture.dispose()
+            }
             updateRandomSurface(terrain);
             updateRandomSurface(clouds);
             noiseTexture = new BABYLON.ProceduralTexture("noise", options.mapSize, "./space/noise", scene, null, true, true);
@@ -205,7 +202,6 @@ export class Planet {
             noiseTexture.setTexture("randomSampler", terrain);
             noiseTexture.setVector2("range", options.range);
             noiseTexture.setVector3("options", new BABYLON.Vector3(options.directNoise ? 1 : 0, options.lowerClip.x, options.lowerClip.y));
-            noiseTexture.refreshRate = 0;
             shaderMaterial.setTexture("textureSampler", noiseTexture);
             cloudTexture = new BABYLON.ProceduralTexture("cloud", options.mapSize, "./space/noise", scene, null, true, true);
             cloudTexture.setTexture("randomSampler", clouds);
@@ -213,7 +209,6 @@ export class Planet {
             cloudTexture.setFloat("maxResolution", 256);
             cloudTexture.setFloat("seed", options.cloudSeed);
             cloudTexture.setVector3("options", new BABYLON.Vector3(1, 0, 1));
-            cloudTexture.refreshRate = 0;
             shaderMaterial.setTexture("cloudSampler", cloudTexture);
             shaderMaterial.setColor3("haloColor", options.haloColor);
         };
@@ -225,10 +220,10 @@ export class Planet {
         var cz =  oz * Math.sin(0);
         this.orbitCenter = new BABYLON.Vector3(ox, oy, oz);
         this.planetShell = planetShell;
-        this.planetBody = planetBody;
+        //this.planetBody = planetBody;
         this.scene = scene;
         this.planetShell.animations = [];
-        this.planetBody.animations = [];
+        //this.planetBody.animations = [];
         this.radian = 0;
     }
 
@@ -253,7 +248,7 @@ export class Planet {
 
         animationX.setKeys(keys);
         this.planetShell.animations.push(animationX);
-        this.planetBody.animations.push(animationX);
+        //this.planetBody.animations.push(animationX);
     }
 
     moveY(y) {
@@ -277,7 +272,7 @@ export class Planet {
 
         animationY.setKeys(keys);
         this.planetShell.animations.push(animationY);
-        this.planetBody.animations.push(animationY);
+        //this.planetBody.animations.push(animationY);
     }
 
     moveZ(z) {
@@ -301,7 +296,7 @@ export class Planet {
 
         animationZ.setKeys(keys);
         this.planetShell.animations.push(animationZ);
-        this.planetBody.animations.push(animationZ);
+        //this.planetBody.animations.push(animationZ);
     }
 
     move(dx, dy, dz) {
@@ -336,7 +331,7 @@ export class Planet {
 
         animation.setKeys(keys);
         this.planetShell.animations.push(animation);
-        this.planetBody.animations.push(animationX);
+        //this.planetBody.animations.push(animationX);
     }
 
     rotateY(radian) {
@@ -360,7 +355,7 @@ export class Planet {
 
         animation.setKeys(keys);
         this.planetShell.animations.push(animation);
-        this.planetBody.animations.push(animationX);
+        //this.planetBody.animations.push(animationX);
     }
 
     rotateZ(radian) {
@@ -384,7 +379,7 @@ export class Planet {
 
         animation.setKeys(keys);
         this.planetShell.animations.push(animation);
-        this.planetBody.animations.push(animationX);
+        //this.planetBody.animations.push(animationX);
     }
 
     orbit(radius, radian) {
@@ -403,8 +398,8 @@ export class Planet {
         this.scene.beginAnimation(this.planetShell, 0, 100, false, 3, function() {
              me.orbit(radius, radian);
         });
-        this.scene.beginAnimation(this.planetBody, 0, 100, false, 3, function() {
-        //     me.orbit(radius);
-        });
+        // this.scene.beginAnimation(this.planetBody, 0, 100, false, 3, function() {
+        // //     me.orbit(radius);
+        // });
     }
 }

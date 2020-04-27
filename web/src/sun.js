@@ -6,7 +6,7 @@ export class Sun {
         y: y,
         z: z,
     }) {
-        var sun = new BABYLON.PointLight("sun", new BABYLON.Vector3(x, x, z), scene);
+        var sun = new BABYLON.PointLight("sun", new BABYLON.Vector3(x, y, z), scene);
         var lensFlareSystem = new BABYLON.LensFlareSystem("lensFlareSystem", sun, scene);
         new BABYLON.LensFlare(.1, 0, new BABYLON.Color3(1, 1, 1), "space/Flare3.png", lensFlareSystem);
         new BABYLON.LensFlare(.4, .1, new BABYLON.Color3(1, 1, 1), "space/Flare.png", lensFlareSystem);
