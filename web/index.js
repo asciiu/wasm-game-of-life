@@ -6,8 +6,8 @@ import { Ship } from './ship.js'
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container.
 const app = new PIXI.Application({
-  width: 800,
-  height: 800,
+  width: 1024,
+  height: 1024,
   backgroundColor: 0x061639,
   //resolution: window.devicePixelRatio || 1,
   resolution: 1,
@@ -24,10 +24,6 @@ const player = new Ship({
 
 const btc = PIXI.Sprite.from('images/btc.png');
 btc.anchor.set(0.5);
-//btc.x = app.screen.width / 2;
-//btc.y = app.screen.height / 2;
-//btc.scale.x = 0.1;
-//btc.scale.y = 0.1;
 btc.width = 40;
 btc.height = 40; 
 const container = new PIXI.Container();
